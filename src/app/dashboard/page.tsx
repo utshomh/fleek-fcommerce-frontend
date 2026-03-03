@@ -1,17 +1,15 @@
 "use client";
 
 import { useAuth } from "@/providers/auth-provider";
-import UserCard from "./_components/user-card";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const router = useRouter();
 
-  if (!user) redirect("/sign-up");
+  if (!user) router.push("/sign-up");
 
-  return (
-    <div className="w-full min-h-screen mx-auto flex items-center justify-center">
-      <UserCard />
-    </div>
-  );
+  if (user!.role === "USER") router.push("/dashboard/profile");
+
+  return;
 }

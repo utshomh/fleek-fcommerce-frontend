@@ -13,6 +13,7 @@ type AuthContextType = {
   isError: boolean;
   isLoading: boolean;
 
+  reFetchUser: () => Promise<void>;
   signUp: (
     name: string,
     email: string,
@@ -20,7 +21,7 @@ type AuthContextType = {
     password: string,
   ) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -31,11 +32,12 @@ const AuthContext = createContext<AuthContextType>({
   isError: false,
   isLoading: false,
 
+  async reFetchUser() {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async signUp(name, email, phone, password) {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async signIn(email, password) {},
-  signOut() {},
+  async signOut() {},
 });
 
 export default function AuthProvider({
@@ -57,20 +59,7 @@ export default function AuthProvider({
         .get(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
-        .then((res) => {
-          if (res.status === 400) {
-            axios
-              .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`)
-              .then((res) => setAccessToken(res.data.accessToken));
-            return axios
-              .get(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-                headers: { Authorization: `Bearer ${accessToken}` },
-              })
-              .then((res) => res.data);
-          } else {
-            return res.data;
-          }
-        });
+        .then((res) => res.data);
       setUser(response.data);
     } catch (err: unknown) {
       console.error(err);
@@ -97,6 +86,10 @@ export default function AuthProvider({
         isError,
         isLoading,
 
+        async reFetchUser() {
+          await fetchUser();
+        },
+
         async signUp(name, email, phone, password) {
           await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`, {
             name,
@@ -116,7 +109,11 @@ export default function AuthProvider({
           setAccessToken(response.accessToken as string);
         },
 
-        signOut() {
+        async signOut() {
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/sign-out`,
+            {},
+          );
           setAccessToken(null);
         },
       }}

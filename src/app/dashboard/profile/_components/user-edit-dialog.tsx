@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function UserEditDialog() {
-  const { user, accessToken } = useAuth();
+  const { user, accessToken, reFetchUser } = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -55,6 +55,7 @@ export default function UserEditDialog() {
           },
         },
       );
+      await reFetchUser();
     } catch (err) {
       console.error(err);
       alert("Failed to update user");
@@ -96,7 +97,7 @@ export default function UserEditDialog() {
                   alt="Preview"
                   width={96}
                   height={96}
-                  className="mt-2 h-24 w-24 object-cover rounded-md"
+                  className="mt-2 h-24 w-24 object-cover rounded-xl border-2 border-gray-500"
                 />
               )}
             </div>

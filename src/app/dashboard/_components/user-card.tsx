@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/providers/auth-provider";
-import UserEditDialog from "./user-edit-dialog";
+import UserEditDialog from "../profile/_components/user-edit-dialog";
 
 export default function UserCard() {
   const { user, error, isError, isLoading } = useAuth();
