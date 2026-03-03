@@ -3,17 +3,36 @@
 import axios from "axios";
 import { createContext, use, useEffect, useState } from "react";
 
+import { User } from "@/types/user";
+
 type AuthContextType = {
   accessToken: string | null;
-  signUp: (name: string, email: string, password: string) => Promise<void>;
+  user: User | null;
+  error: string;
+
+  isError: boolean;
+  isLoading: boolean;
+
+  signUp: (
+    name: string,
+    email: string,
+    phone: number,
+    password: string,
+  ) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
   accessToken: null,
+  user: null,
+  error: "",
+
+  isError: false,
+  isLoading: false,
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async signUp(name, email, password) {},
+  async signUp(name, email, phone, password) {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async signIn(email, password) {},
   signOut() {},
@@ -25,14 +44,36 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchUser = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      setUser(response.data.data);
+    } catch (err: unknown) {
+      console.error(err);
+      setIsError(true);
+      setError("Failed to fetch user data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const stored = localStorage.getItem("accessToken");
-    if (stored) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAccessToken(stored);
+    if (accessToken) {
+      fetchUser();
     }
-  }, []);
+  }, [accessToken]);
 
   useEffect(() => {
     if (accessToken) {
@@ -46,11 +87,17 @@ export default function AuthProvider({
     <AuthContext.Provider
       value={{
         accessToken,
+        user,
+        error,
 
-        async signUp(name, email, password) {
+        isError,
+        isLoading,
+
+        async signUp(name, email, phone, password) {
           await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`, {
             name,
             email,
+            phone,
             password,
           });
         },

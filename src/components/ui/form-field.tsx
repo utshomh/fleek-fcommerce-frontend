@@ -1,6 +1,9 @@
 import { forwardRef } from "react";
 import { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
+import { Input } from "./input";
+import { Label } from "./label";
+
 interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   className?: string;
@@ -14,12 +17,10 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
     ref,
   ) => {
     return (
-      <div className="form-control w-full space-y-1">
-        <label className="label font-semibold">
-          <span className="label-text">{label}</span>
-        </label>
+      <div className="w-full space-y-1">
+        <Label>{label}</Label>
 
-        <input
+        <Input
           {...registration}
           {...props}
           ref={(e) => {
@@ -28,27 +29,11 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
             else if (ref) ref.current = e;
           }}
           type={type}
-          className={`
-    w-full 
-    px-3 py-1 
-    rounded-md 
-    border 
-    bg-white 
-    text-gray-900 
-    placeholder-gray-400
-    focus:outline-none 
-    focus:ring-2 
-    focus:ring-blue-500 
-    focus:border-blue-500
-    disabled:bg-gray-100 
-    disabled:cursor-not-allowed
-    ${
-      error
-        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-        : "border-gray-300"
-    }
-    ${className}
-  `}
+          className={`min-w-75 max-w-full ${
+            error
+              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+              : "border-gray-300"
+          } ${className}`}
         />
 
         {error && <p className="text-red-500 text-xs">{error.message}</p>}
@@ -56,7 +41,5 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
     );
   },
 );
-
-FormField.displayName = "FormField";
 
 export default FormField;
