@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
-import useAuthStore from "@/store/authStore";
+import { useAuth } from "@/providers/auth-provider";
 
 export interface SignInTabInput {
   email: string;
@@ -18,7 +18,7 @@ export default function SignInTab() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInTabInput>();
-  const { signIn } = useAuthStore();
+  const { signIn } = useAuth();
 
   const onSubmit = async (data: SignInTabInput) => {
     const { email, password } = data;

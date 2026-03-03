@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/ui/form-field";
-import useAuthStore from "@/store/authStore";
+import { useAuth } from "@/providers/auth-provider";
 
 export interface SignUpTabInput {
   name: string;
@@ -15,16 +15,18 @@ export interface SignUpTabInput {
 
 export default function SignUpTab() {
   const {
+    reset,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignUpTabInput>();
-  const { signUp } = useAuthStore();
+  const { signUp } = useAuth();
 
   const onSubmit = async (data: SignUpTabInput) => {
     const { name, email, password } = data;
     await signUp(name, email, password);
     toast("Successfully signed up! You can sign-in now.");
+    reset();
   };
 
   return (

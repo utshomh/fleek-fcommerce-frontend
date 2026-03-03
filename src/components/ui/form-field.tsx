@@ -30,7 +30,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
           type={type}
           className={`
     w-full 
-    px-3 py-2 
+    px-3 py-1 
     rounded-md 
     border 
     bg-white 

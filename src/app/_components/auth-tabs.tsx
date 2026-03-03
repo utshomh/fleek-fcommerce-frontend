@@ -4,7 +4,7 @@ import SignInTab from "./sign-in-tab";
 
 export default function AuthTabs() {
   return (
-    <Tabs defaultValue="sign-up" className="w-[400px]">
+    <Tabs defaultValue="sign-up" className="w-100">
       <TabsList>
         <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
         <TabsTrigger value="sign-in">Sign In</TabsTrigger>
